@@ -5,9 +5,9 @@
   --ink: #111111;
   --ink-2: #4a4a46;
   --rule: #d9d9d4;
-  --blue: #2f3cff;
-  --blue-ink: #ffffff;
-  --blue-soft: #dfe2ff;
+  --accent: #1d4a32;
+  --accent-ink: #ffffff;
+  --accent-soft: #cfe0d4;
 
   --font: 'Archivo Variable', 'Archivo', system-ui, sans-serif;
 
@@ -58,8 +58,8 @@ body {
 }
 
 ::selection {
-  background: var(--blue);
-  color: var(--blue-ink);
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 
 h1,
@@ -93,12 +93,12 @@ a {
 }
 
 :focus-visible {
-  outline: 3px solid var(--blue);
+  outline: 3px solid var(--accent);
   outline-offset: 3px;
 }
 
-.on-blue :focus-visible {
-  outline-color: var(--blue-ink);
+.on-accent :focus-visible {
+  outline-color: var(--accent-ink);
 }
 
 img,

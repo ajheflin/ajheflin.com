@@ -64,7 +64,7 @@ const d = entry.data;
       </div>
     </div>
 
-    <a class="next on-blue" href={`/work/${next.id}`}>
+    <a class="next on-accent" href={`/work/${next.id}`}>
       <span class="grid next-inner">
         <span class="next-title">Next: {next.data.title}</span>
         <span class="next-go"><Arrow size="1em" /></span>
@@ -171,13 +171,13 @@ const d = entry.data;
   }
 
   .prose :global(li::marker) {
-    color: var(--blue);
+    color: var(--accent);
   }
 
   .next {
     display: block;
-    background: var(--blue);
-    color: var(--blue-ink);
+    background: var(--accent);
+    color: var(--accent-ink);
     text-decoration: none;
     padding-block: var(--space-l) var(--space-xl);
   }
