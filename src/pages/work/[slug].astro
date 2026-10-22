@@ -1,0 +1,226 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Arrow from '../../components/Arrow.astro';
+
+export async function getStaticPaths() {
+  const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
+  return work.map((entry, i) => ({
+    params: { slug: entry.id },
+    props: { entry, next: work[(i + 1) % work.length] },
+  }));
+}
+
+const { entry, next } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+---
+<Base title={d.title} description={d.summary}>
+  <article class="project">
+    <header class="top grid">
+      <a class="back label" href="/#work"><Arrow dir="left" /> All work</a>
+      <h1 class="title" style={`view-transition-name: title-${entry.id}`}>{d.title}</h1>
+      <p class="summary">{d.summary}</p>
+    </header>
+
+    <div class="body grid">
+      <dl class="facts">
+        <div>
+          <dt class="label">Role</dt>
+          <dd>{d.context}</dd>
+        </div>
+        <div>
+          <dt class="label">When</dt>
+          <dd>{d.when}</dd>
+        </div>
+        <div>
+          <dt class="label">Stack</dt>
+          <dd>
+            <ul role="list">{d.stack.map((s) => <li>{s}</li>)}</ul>
+          </dd>
+        </div>
+        {d.links.length > 0 && (
+          <div>
+            <dt class="label">Links</dt>
+            <dd>
+              <ul role="list">
+                {d.links.map((l) => (
+                  <li><a href={l.href}>{l.label} <Arrow dir="up-right" /></a></li>
+                ))}
+              </ul>
+            </dd>
+          </div>
+        )}
+        {d.internal && (
+          <div>
+            <dt class="label">Access</dt>
+            <dd>Internal Disney tool, so no public link or screenshots.</dd>
+          </div>
+        )}
+      </dl>
+
+      <div class="prose">
+        <Content />
+      </div>
+    </div>
+
+    <a class="next on-blue" href={`/work/${next.id}`}>
+      <span class="grid next-inner">
+        <span class="next-title">Next: {next.data.title}</span>
+        <span class="next-go"><Arrow size="1em" /></span>
+      </span>
+    </a>
+  </article>
+</Base>
+
+<style>
+  .top {
+    padding-top: var(--space-l);
+    padding-bottom: var(--space-l);
+    row-gap: var(--space-m);
+  }
+
+  .back {
+    grid-column: 1 / -1;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    width: fit-content;
+    text-decoration: none;
+  }
+
+  .back:hover {
+    text-decoration: underline;
+  }
+
+  .title {
+    grid-column: 1 / -1;
+    font-size: clamp(3rem, 1rem + 8vw, 9.5rem);
+    font-weight: 900;
+    font-stretch: 104%;
+    letter-spacing: -0.045em;
+    line-height: 0.88;
+    margin-left: -0.03em;
+    max-width: 14ch;
+  }
+
+  .summary {
+    grid-column: 1 / 9;
+    font-size: var(--step-1);
+    font-weight: 500;
+    line-height: 1.3;
+    max-width: 40ch;
+  }
+
+  .body {
+    border-top: 2px solid var(--ink);
+    padding-top: var(--space-m);
+    padding-bottom: var(--space-xl);
+    row-gap: var(--space-l);
+  }
+
+  .facts {
+    grid-column: 1 / 4;
+    display: grid;
+    gap: var(--space-m);
+    align-content: start;
+  }
+
+  .facts dd {
+    margin-top: 0.3rem;
+  }
+
+  .facts ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .facts a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    font-weight: 700;
+  }
+
+  .prose {
+    grid-column: 5 / -1;
+    max-width: 66ch;
+  }
+
+  .prose :global(> * + *) {
+    margin-top: 1.1em;
+  }
+
+  .prose :global(h2) {
+    font-size: var(--step-2);
+    font-stretch: 106%;
+    margin-top: 1.8em;
+    margin-bottom: -0.2em;
+  }
+
+  .prose :global(p:first-child) {
+    font-size: var(--step-1);
+    line-height: 1.35;
+    font-weight: 500;
+  }
+
+  .prose :global(ul) {
+    padding-left: 1.1em;
+    display: grid;
+    gap: 0.6em;
+  }
+
+  .prose :global(li::marker) {
+    color: var(--blue);
+  }
+
+  .next {
+    display: block;
+    background: var(--blue);
+    color: var(--blue-ink);
+    text-decoration: none;
+    padding-block: var(--space-l) var(--space-xl);
+  }
+
+  .next-inner {
+    align-items: end;
+    row-gap: var(--space-s);
+  }
+
+  .next-title {
+    grid-column: 1 / 11;
+    font-size: var(--step-3);
+    font-weight: 850;
+    font-stretch: 108%;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+  }
+
+  .next-go {
+    grid-column: 11 / -1;
+    justify-self: end;
+    font-size: var(--step-3);
+    transition: translate 500ms var(--ease-out);
+  }
+
+  .next:hover .next-go {
+    translate: 0.25em 0;
+  }
+
+  .next:hover .next-title {
+    text-decoration: underline;
+    text-decoration-thickness: 0.06em;
+  }
+
+  @media (max-width: 60rem) {
+    .summary,
+    .facts,
+    .prose {
+      grid-column: 1 / -1;
+    }
+
+    .facts {
+      grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    }
+  }
+</style>

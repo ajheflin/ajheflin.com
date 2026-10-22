@@ -1,0 +1,30 @@
+---
+// Drawn arrow used on every outbound and forward link.
+interface Props {
+  dir?: 'right' | 'up-right' | 'left' | 'down';
+  size?: string;
+}
+const { dir = 'right', size = '0.85em' } = Astro.props;
+const rotate = { right: 0, 'up-right': -45, left: 180, down: 90 }[dir];
+---
+<svg
+  class="arrow"
+  width={size}
+  height={size}
+  viewBox="0 0 16 16"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="square"
+  aria-hidden="true"
+  style={`transform: rotate(${rotate}deg)`}
+>
+  <path d="M1.5 8h12M8.5 3l5 5-5 5" />
+</svg>
+<style>
+  .arrow {
+    display: inline-block;
+    flex: none;
+    vertical-align: -0.05em;
+  }
+</style>

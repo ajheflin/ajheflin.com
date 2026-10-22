@@ -1,0 +1,612 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Arrow from '../components/Arrow.astro';
+import { site, links } from '../data/site';
+import { experience, skills, education } from '../data/resume';
+
+const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
+const year = new Date().getFullYear();
+---
+<Base>
+  <section class="hero grid" aria-labelledby="hero-name">
+    <h1 id="hero-name" class="hero-name" aria-label={site.name}>
+      <span class="line"><span>Adam</span></span>
+      <span class="line"><span>Heflin.</span></span>
+    </h1>
+
+    <p class="hero-intro">
+      Software engineer in Tampa, writing code for fourteen years. I build reliable systems in Go, and I run a
+      game-hosting company too.
+    </p>
+
+    <aside class="now on-blue" aria-label="Current role">
+      <p class="now-co"><span class="pulse" aria-hidden="true"></span>Now at Red Hat</p>
+      <p class="now-role">Senior Software Engineer, OpenShift Advanced Cluster Security</p>
+      <div class="now-actions">
+        <a class="btn btn-solid" href={`mailto:${site.email}`}>Email me <Arrow /></a>
+        <a class="btn" href="/resume">Read the résumé <Arrow /></a>
+      </div>
+    </aside>
+  </section>
+
+  <section id="work" class="work grid" aria-labelledby="work-head">
+    <h2 id="work-head" class="section-head head">Selected work</h2>
+    <ol class="rows" role="list">
+      {work.map((p) => (
+        <li>
+          <a class="row" href={`/work/${p.id}`}>
+            <span class="row-when label">{p.data.when}</span>
+            <span class="row-main">
+              <span class="row-title" style={`view-transition-name: title-${p.id}`}>{p.data.title}</span>
+              <span class="row-summary">{p.data.summary}</span>
+            </span>
+            <span class="row-stack label">{p.data.stack.join(' · ')}</span>
+            <span class="row-go"><Arrow size="1.4em" /></span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section id="experience" class="exp grid" aria-labelledby="exp-head">
+    <h2 id="exp-head" class="section-head head">Experience</h2>
+    {experience.map((r) => (
+      <article class="role">
+        <p class="role-when label">
+          {r.current && <span class="dot" aria-hidden="true"></span>}
+          {r.start} – {r.end}
+        </p>
+        <header class="role-head">
+          <h3>{r.company}</h3>
+          <p class="role-title">{r.role}</p>
+          {r.team && <p class="role-team">{r.team}</p>}
+        </header>
+        <ul class="role-points">
+          {r.points.map((pt) => <li>{pt}</li>)}
+        </ul>
+      </article>
+    ))}
+  </section>
+
+  <section class="skills grid" aria-labelledby="skills-head">
+    <h2 id="skills-head" class="section-head head">Tools</h2>
+    {Object.entries(skills).map(([group, items]) => (
+      <div class="skill-group">
+        <h3 class="label">{group}</h3>
+        <ul class="skill-list" role="list">
+          {items.map((s) => <li>{s}</li>)}
+        </ul>
+      </div>
+    ))}
+    <div class="skill-group">
+      <h3 class="label">Education</h3>
+      <p class="edu">
+        <strong>{education.school}</strong>
+        <span>{education.degree}, {education.years}</span>
+      </p>
+    </div>
+  </section>
+
+  <footer id="contact" class="contact on-blue" aria-labelledby="contact-head">
+    <div class="grid">
+      <h2 id="contact-head" class="contact-head">Say hello.</h2>
+      <a class="contact-email" href={`mailto:${site.email}`}>{site.email}</a>
+      <ul class="contact-links" role="list">
+        {links.map((l) => (
+          <li>
+            <a href={l.href} rel="me noopener">{l.label} <Arrow dir="up-right" /></a>
+          </li>
+        ))}
+        <li><a href="/resume">Résumé <Arrow /></a></li>
+      </ul>
+      <p class="contact-fine label">© {year} Adam (AJ) Heflin · {site.location}</p>
+    </div>
+  </footer>
+</Base>
+
+<style>
+  /* ---------- Hero ---------- */
+  .hero {
+    grid-template-rows: auto auto;
+    row-gap: var(--space-m);
+    padding-bottom: var(--space-l);
+    padding-top: clamp(0.5rem, 2vw, 2rem);
+    overflow-x: clip;
+  }
+
+  .hero-name {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    /* Sized so "Heflin." spans eight columns and clears the blue block by a gutter or more. */
+    font-size: clamp(4.5rem, 1rem + 14.3vw, 15rem);
+    font-weight: 900;
+    font-stretch: 118%;
+    letter-spacing: -0.045em;
+    line-height: 0.84;
+    margin-left: -0.04em;
+  }
+
+  .line {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.06em;
+  }
+
+  .line > span {
+    display: inline-block;
+    animation: rise 1100ms var(--ease-out) both;
+  }
+
+  .line:nth-child(2) > span {
+    animation-delay: 90ms;
+  }
+
+  .hero-intro {
+    grid-column: 1 / 6;
+    grid-row: 2;
+    align-self: end;
+    font-size: var(--step-1);
+    line-height: 1.3;
+    font-weight: 500;
+    max-width: 30ch;
+  }
+
+  .now {
+    /* Column 9 starts just right of "Heflin.", so the block can rise beside it. */
+    grid-column: 9 / -1;
+    grid-row: 1 / 3;
+    align-self: end;
+    margin-right: calc(-1 * var(--margin));
+    background: var(--blue);
+    color: var(--blue-ink);
+    padding: var(--space-m) var(--margin) var(--space-m) var(--space-m);
+    display: grid;
+    gap: 0.5rem;
+    animation: wipe 1000ms 250ms var(--ease-out) both;
+  }
+
+  .pulse {
+    display: inline-block;
+    vertical-align: 0.12em;
+    margin-right: 0.3em;
+    width: 0.32em;
+    height: 0.32em;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 0 0 rgb(255 255 255 / 0.7);
+    animation: pulse 2.4s ease-out infinite;
+  }
+
+  .now-co {
+    font-size: var(--step-3);
+    font-weight: 850;
+    font-stretch: 112%;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  .now-role {
+    font-size: var(--step-1);
+    line-height: 1.25;
+    font-weight: 500;
+    max-width: 26ch;
+  }
+
+  .now-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: var(--space-s);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+    padding: 0.8em 1.15em;
+    border: 2px solid currentColor;
+    font-weight: 750;
+    text-decoration: none;
+    transition:
+      background-color 250ms var(--ease-out),
+      color 250ms var(--ease-out);
+  }
+
+  .btn :global(.arrow) {
+    transition: translate 350ms var(--ease-out);
+  }
+
+  .btn:hover :global(.arrow) {
+    translate: 0.2em 0;
+  }
+
+  .btn-solid {
+    background: var(--blue-ink);
+    border-color: var(--blue-ink);
+    color: var(--blue);
+  }
+
+  .btn:not(.btn-solid):hover {
+    background: var(--blue-ink);
+    color: var(--blue);
+  }
+
+  .btn-solid:hover {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--blue-ink);
+  }
+
+  /* ---------- Section heads ---------- */
+  /* Each section opens on a heavy ink rule; dividers inside are hairlines. */
+  .work,
+  .exp,
+  .skills {
+    padding-top: var(--space-xl);
+  }
+
+  .work {
+    padding-top: 0;
+  }
+
+  .head {
+    grid-column: 1 / -1;
+    border-top: 2px solid var(--ink);
+    padding-top: var(--space-m);
+    padding-bottom: var(--space-s);
+  }
+
+  /* ---------- Work rows ---------- */
+  .rows {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    list-style: none;
+    padding: 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .rows > li {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+  }
+
+  .row {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    align-items: baseline;
+    position: relative;
+    isolation: isolate;
+    padding-block: var(--space-m) var(--space-l);
+    border-top: 1px solid var(--rule);
+    text-decoration: none;
+    transition: color 450ms var(--ease-out);
+  }
+
+  /* Signature: the row floods with blue from the left. */
+  .row::before {
+    content: '';
+    position: absolute;
+    inset: -1px calc(-1 * var(--margin)) 0;
+    background: var(--blue);
+    z-index: -1;
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 650ms var(--ease-out);
+  }
+
+  .row:hover,
+  .row:focus-visible {
+    color: var(--blue-ink);
+  }
+
+  .row:hover::before,
+  .row:focus-visible::before {
+    clip-path: inset(0 0 0 0);
+  }
+
+  .row:focus-visible {
+    outline: none;
+  }
+
+  .row-when {
+    grid-column: 1 / 3;
+  }
+
+  .row-main {
+    grid-column: 3 / 10;
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .row-title {
+    font-size: var(--step-3);
+    font-weight: 850;
+    font-stretch: 108%;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+    text-wrap: balance;
+  }
+
+  .row-summary {
+    font-size: var(--step-0);
+    max-width: 52ch;
+    color: var(--ink-2);
+    transition: color 450ms var(--ease-out);
+  }
+
+  .row:hover .row-summary,
+  .row:focus-visible .row-summary {
+    color: var(--blue-soft);
+  }
+
+  .row-stack {
+    grid-column: 10 / 12;
+  }
+
+  .row-go {
+    grid-column: 12 / 13;
+    justify-self: end;
+    transition: translate 500ms var(--ease-out);
+  }
+
+  .row:hover .row-go {
+    translate: 0.3em 0;
+  }
+
+  /* ---------- Experience ---------- */
+  .role {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    row-gap: var(--space-s);
+    padding-block: var(--space-m) var(--space-l);
+    border-top: 1px solid var(--rule);
+  }
+
+  .role-when {
+    grid-column: 1 / 3;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    height: fit-content;
+  }
+
+  .dot {
+    width: 0.55em;
+    height: 0.55em;
+    border-radius: 50%;
+    background: var(--blue);
+  }
+
+  .role-head {
+    grid-column: 3 / 7;
+  }
+
+  .role-head h3 {
+    font-size: var(--step-2);
+    font-stretch: 108%;
+    font-weight: 850;
+  }
+
+  .role-title {
+    margin-top: 0.6rem;
+    font-weight: 700;
+  }
+
+  .role-team {
+    color: var(--ink-2);
+  }
+
+  .role-points {
+    grid-column: 7 / -1;
+    padding-left: 1.1em;
+    display: grid;
+    gap: 0.55rem;
+    max-width: 62ch;
+  }
+
+  .role-points li::marker {
+    color: var(--blue);
+  }
+
+  /* ---------- Tools ---------- */
+  .skills {
+    padding-bottom: var(--space-xl);
+  }
+
+  .skill-group {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    padding-block: var(--space-m);
+    border-top: 1px solid var(--rule);
+  }
+
+  .skill-group > h3 {
+    grid-column: 1 / 3;
+    letter-spacing: 0;
+    padding-top: 0.5em;
+  }
+
+  .skill-list {
+    grid-column: 3 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    padding: 0;
+    font-size: var(--step-2);
+    font-weight: 750;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+  }
+
+  .skill-list li:not(:last-child)::after {
+    content: '/';
+    color: var(--rule);
+    font-weight: 400;
+    margin-inline: 0.35em;
+  }
+
+  .edu {
+    grid-column: 3 / -1;
+    display: grid;
+    gap: 0.2rem;
+  }
+
+  .edu strong {
+    font-size: var(--step-2);
+    font-weight: 750;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+  }
+
+  /* ---------- Contact ---------- */
+  .contact {
+    background: var(--blue);
+    color: var(--blue-ink);
+    padding-block: var(--space-xl) var(--space-m);
+  }
+
+  .contact-head {
+    grid-column: 1 / -1;
+    font-size: var(--step-display);
+    font-weight: 900;
+    letter-spacing: -0.045em;
+    line-height: 0.84;
+    margin-left: -0.04em;
+  }
+
+  .contact-email {
+    grid-column: 1 / -1;
+    margin-top: var(--space-l);
+    font-size: var(--step-3);
+    font-weight: 800;
+    font-stretch: 106%;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    width: fit-content;
+    overflow-wrap: anywhere;
+    text-decoration-thickness: 0.06em;
+  }
+
+  .contact-email:hover {
+    text-decoration-thickness: 0.12em;
+  }
+
+  .contact-links {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 2rem;
+    list-style: none;
+    padding: var(--space-l) 0 0;
+    font-size: var(--step-1);
+    font-weight: 700;
+  }
+
+  .contact-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    text-decoration: none;
+  }
+
+  .contact-links a:hover {
+    text-decoration: underline;
+  }
+
+  .contact-fine {
+    grid-column: 1 / -1;
+    margin-top: var(--space-xl);
+    color: var(--blue-soft);
+  }
+
+  /* ---------- Motion ---------- */
+  @keyframes rise {
+    from {
+      transform: translateY(105%);
+    }
+  }
+
+  @keyframes wipe {
+    from {
+      clip-path: inset(0 0 0 100%);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgb(255 255 255 / 0.6);
+    }
+    70%,
+    100% {
+      box-shadow: 0 0 0 0.35em rgb(255 255 255 / 0);
+    }
+  }
+
+  /* ---------- Narrow ---------- */
+  @media (max-width: 60rem) {
+    .hero {
+      grid-template-rows: auto auto auto;
+      min-height: 0;
+    }
+
+    .hero-name {
+      font-size: 24vw;
+    }
+
+    .hero-intro {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      padding-bottom: 0;
+      max-width: 34ch;
+    }
+
+    .now {
+      grid-column: 1 / -1;
+      grid-row: 3;
+      margin-left: calc(-1 * var(--margin));
+      padding-left: var(--margin);
+      margin-top: var(--space-m);
+    }
+
+    .row-when {
+      grid-column: 1 / -1;
+      margin-bottom: 0.6rem;
+    }
+
+    .row-main {
+      grid-column: 1 / 12;
+    }
+
+    .row-stack {
+      grid-column: 1 / -1;
+      margin-top: 0.8rem;
+    }
+
+    .row-go {
+      grid-row: 2;
+      align-self: start;
+    }
+
+    .role-when,
+    .role-head,
+    .role-points,
+    .skill-group > h3,
+    .skill-list,
+    .edu {
+      grid-column: 1 / -1;
+    }
+
+    .skill-group > h3 {
+      padding-top: 0;
+      margin-bottom: 0.75rem;
+    }
+  }
+</style>

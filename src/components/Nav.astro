@@ -1,0 +1,61 @@
+---
+import { site } from '../data/site';
+const path = Astro.url.pathname;
+const items = [
+  { label: 'Work', href: '/#work' },
+  { label: 'Résumé', href: '/resume' },
+  { label: 'Contact', href: '/#contact' },
+];
+---
+<header class="nav grid">
+  <a class="name" href="/" aria-current={path === '/' ? 'page' : undefined}>{site.shortName}</a>
+  <nav aria-label="Primary">
+    <ul>
+      {items.map((item) => (
+        <li>
+          <a href={item.href} aria-current={path.startsWith(item.href) && item.href !== '/' ? 'page' : undefined}>
+            {item.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</header>
+<style>
+  .nav {
+    align-items: baseline;
+    padding-block: clamp(1rem, 0.7rem + 1vw, 2rem);
+    font-weight: 750;
+    font-size: var(--step-0);
+  }
+
+  .name {
+    grid-column: 1 / 7;
+    justify-self: start;
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+
+  nav {
+    grid-column: 7 / -1;
+    justify-self: end;
+  }
+
+  ul {
+    display: flex;
+    gap: clamp(1rem, 0.5rem + 2vw, 2.5rem);
+    list-style: none;
+    padding: 0;
+  }
+
+  a {
+    text-decoration: none;
+    background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 0 2px;
+    transition: background-size 400ms var(--ease-out);
+  }
+
+  a:hover,
+  nav a[aria-current='page'] {
+    background-size: 100% 2px;
+  }
+</style>

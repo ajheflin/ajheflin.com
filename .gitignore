@@ -1,0 +1,20 @@
+# Dependencies and build output
+node_modules/
+dist/
+.astro/
+
+# Local tooling and design-process files (not part of the site)
+.agents/
+.claude/
+.codex/
+.impeccable/
+.playwright-mcp/
+skills-lock.json
+PRODUCT.md
+DESIGN.md
+
+# Environment and OS noise
+.env
+.env.*
+.DS_Store
+*.log
