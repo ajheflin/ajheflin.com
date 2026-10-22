@@ -1,3 +1,4 @@
+# Builds the Astro site and rsyncs dist/ to the nginx host on every push to main.
 name: Deploy
 
 on:
